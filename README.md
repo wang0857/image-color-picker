@@ -18,7 +18,7 @@ One of them is [Pixel manipulation](https://developer.mozilla.org/en-US/docs/Web
 - Cypress, for the E2E test (TBD)
 - Vitest, for unit test (TBD)
 
-## Progress
+## Current Progress
 
 - [v] Set up the app using Vite.
 - [v] Set up the Redux store.
@@ -31,3 +31,7 @@ One of them is [Pixel manipulation](https://developer.mozilla.org/en-US/docs/Web
 - [] Develop the function of copying the value from the color input field.
 - [] Develop the unit test for the functions of vonverting colors and copying values.
 - [] Develop the E2E test for the UI.
+
+## Prototypes in Figma
+
+[https://www.figma.com/proto/cX24YdWm99AOozlygN1IUN/ColorPicker?node-id=21-392&t=u6XPW9JTRQM5XlKp-1&scaling=min-zoom&content-scaling=fixed&page-id=5%3A272](https://www.figma.com/proto/cX24YdWm99AOozlygN1IUN/ColorPicker?node-id=21-392&t=u6XPW9JTRQM5XlKp-1&scaling=min-zoom&content-scaling=fixed&page-id=5%3A272)
