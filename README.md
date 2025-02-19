@@ -1,50 +1,33 @@
-# React + TypeScript + Vite
+# Color Image Picker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is my side project for picking colors from a temporarily uploaded image.
 
-Currently, two official plugins are available:
+## Where I got Inspired
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+When learning the canvas from MDN, I found the canvas having many handy features.
+One of them is [Pixel manipulation](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas) where you can get the pixel's data like x y coordination and its color codes such as RGBA.
 
-## Expanding the ESLint configuration
+## What tools I will use
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Vite
+- React
+- TypeScript
+- Redux
+- MUI, the UI library for customizing the component via its design system
+- React Error Boundary, catching any error and display it gracefully on the UI.
+- Cypress, for the E2E test (TBD)
+- Vitest, for unit test (TBD)
 
-- Configure the top-level `parserOptions` property like this:
+## Progress
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- [v] Set up the app using Vite.
+- [v] Set up the Redux store.
+- [v] Set up the Error Boundary.
+- [] Set up the Custom Design System in MUI.
+- [] Develop the Image uploader.
+- [] Develop the Image Canvas.
+- [] Develop the Color Inputs displaying the color information.
+- [] Develop the function of converting RGB to Hex codes.
+- [] Develop the function of copying the value from the color input field.
+- [] Develop the unit test for the functions of vonverting colors and copying values.
+- [] Develop the E2E test for the UI.
