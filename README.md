@@ -23,7 +23,7 @@ One of them is [Pixel manipulation](https://developer.mozilla.org/en-US/docs/Web
 - [v] Set up the app using Vite.
 - [v] Set up the Redux store.
 - [v] Set up the Error Boundary.
-- [] Set up the Custom Design System in MUI.
+- [v] Set up the Custom Design System in MUI.
 - [] Develop the Image uploader.
 - [] Develop the Image Canvas.
 - [] Develop the Color Inputs displaying the color information.
