@@ -1,0 +1,26 @@
+// Default is Dark Theme
+:root {
+    --border-color: #ffffff;
+    --border-success: #2CC5A0;
+    --border-error: #D03131;
+}
+
+// For the Light theme
+// @media (prefers-color-scheme: light) {
+//   :root {
+//     --bg-color: #ffffff;
+//     --text-color: #000000;
+//     --primary-color: #4CAF50;
+//     --secondary-color: #e0e0e0;
+//   }
+// }
+
+/* Main Content */
+.cp-main-content {
+    &-container {
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        gap: 32px;
+    }
+}

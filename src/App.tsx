@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { ErrorBoundary } from "react-error-boundary"
-import { ErrorFallback } from "./components"
-import { Button, CssBaseline, ThemeProvider } from "@mui/material"
+import { ErrorFallback, Header, MainContent } from "./components"
+import { Box, CssBaseline, ThemeProvider } from "@mui/material"
 import { customDarkTheme, customLightTheme } from "./themes";
 
 function App() {
-  const [isDark, _setIsDark] = useState(false);
+  const [isDark, _setIsDark] = useState(true);
 
   return (
     <ErrorBoundary
@@ -20,10 +20,20 @@ function App() {
     >
       <ThemeProvider theme={isDark ? customDarkTheme : customLightTheme}>
         <CssBaseline>
-          {/* TODO: The main component */}
-          <Button variant="contained" color="primary">
-            Test
-          </Button>
+          <Box
+            className="cp-container"
+            display="flex"
+            flexDirection="column"
+            gap={4}
+            justifyContent="center"
+            alignContent="center"
+            minWidth="100vw"
+            minHeight="100vh"
+          >
+            <Header />
+            <MainContent />
+            {/* TODO: Add the copyright(c) Karen Wang*/}
+          </Box>
         </CssBaseline>
       </ThemeProvider>
     </ErrorBoundary>

@@ -48,47 +48,47 @@ export const lightPalettes = {
 
 export const darkPalettes = {
     primary: {
-        main: '#5A5A72', // Darker, muted version of original
-        light: '#75758A',
-        dark: '#3E3E52',
-        contrastText: '#E0E0E0', // Light text for contrast
+        main: '#8C8CA1', // Darker, muted version of original
+        // light: '#75758A',
+        // dark: '#3E3E52',
+        contrastText: '#FFFFFF', // Light text for contrast
     },
     secondary: {
-        main: '#A6A6A6', // Darkened secondary color
-        light: '#C2C2C2',
-        dark: '#7D7D7D',
-        contrastText: '#F0F0F0',
+        main: '#D2D2D2', // Darkened secondary color
+        // light: '#C2C2C2',
+        // dark: '#7D7D7D',
+        contrastText: '#0E0E2C',
     },
     error: {
         main: '#D03131',
-        light: '#D0313140', // Adjusted opacity for dark backgrounds
-        dark: '#922424',
+        light: '#D0313125',
+        dark: '#923D3D',
         contrastText: '#FFFFFF',
     },
     warning: {
         main: '#FBD600',
-        light: '#FBD60040',
-        dark: '#A28E00',
-        contrastText: '#000000',
+        light: '#FBD60025',
+        dark: '#837839',
+        contrastText: '#0E0E2C',
     },
     info: {
-        main: '#31BED0',
-        light: '#31BED040',
-        dark: '#1E7C88',
+        main: '#2FB4C6',
+        light: '#2FB4C625',
+        dark: '#25717B',
         contrastText: '#FFFFFF',
     },
     success: {
-        main: '#31D0AA',
-        light: '#31D0AA40',
-        dark: '#1B7A6A',
+        main: '#2CC5A0',
+        light: '#2CC5A025',
+        dark: '#167961',
         contrastText: '#FFFFFF',
     },
     background: {
-        default: '#121212', // Dark background
-        paper: '#1E1E1E',
+        default: '#191B24', // Dark background
+        paper: '#F3F3F3',
     },
     text: {
-        primary: '#E0E0E0', // Light text for readability
-        secondary: '#B0B0B0',
+        primary: '#9999CE', // Light text for readability
+        secondary: '#8C8CA1',
     },
 }
