@@ -24,10 +24,10 @@ One of them is [Pixel manipulation](https://developer.mozilla.org/en-US/docs/Web
 - [v] Set up the Redux store.
 - [v] Set up the Error Boundary.
 - [v] Set up the Custom Design System in MUI.
-- [] Develop the Image uploader.
-- [] Develop the Image Canvas.
+- [v] Develop the Image uploader.
+- [v] Develop the Image Canvas.
 - [] Develop the Color Inputs displaying the color information.
-- [] Develop the function of converting RGB to Hex codes.
+- [v] Develop the function of converting RGB to Hex codes.
 - [] Develop the function of copying the value from the color input field.
 - [] Develop the unit test for the functions of vonverting colors and copying values.
 - [] Develop the E2E test for the UI.

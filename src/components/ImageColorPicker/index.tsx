@@ -11,12 +11,15 @@ interface ImageColorPickerProps {
 function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
     // Canvas relates
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-    // Image relates
-    const imageRef = useRef<HTMLImageElement | null>(null);
     // Custom eyedropper related
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const positionRef = useRef({ x: 0, y: 0 });
+    const eyedropperRef = useRef<HTMLDivElement>(null);
+    const CIRCLE_SIZE = 26
     // Drag dot related
     const [isDragging, setIsDragging] = useState(false);
+    // Detect the mouse move related
+    const isMouseDown = useRef(false);
+    const containerRef = useRef<HTMLDivElement>(null);
     
 
     /**
@@ -34,16 +37,11 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
         img.alt = "Uploaded image"
 
         img.onload = () => {
-            // TODO: Haven't fix it. To be continued
-            const imageDom = imageRef.current!
-            canvas.width = imageDom.width;
-            canvas.height = imageDom.height;
-            // const imageDom = document.querySelector('.cp-image-color-picker-image-hidden') as HTMLImageElement
+            canvas.width = img.width;
+            canvas.height = img.height;
             ctx.drawImage(
-                img,                    // source
-                0, 0,                   // draw starting at top-left corner of canvas
-                // img.width,   // Scale to current image width 
-                // img. height  // Scale to current image height
+                img,    // source
+                0, 0,   // draw starting at top-left corner of canvas
             );
         };
     }, [src]);
@@ -53,13 +51,29 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
      */
     function handleMouseMoveOnCanvas(event: React.MouseEvent<HTMLCanvasElement>) {
         if(isDragging) {
+            // Canvas
             const canvas = canvasRef.current!;
             const ctx = canvas.getContext('2d')!;
-    
             const bounding = canvas.getBoundingClientRect();
+
+            // Get the position
             const x = event.clientX - bounding.left;
             const y = event.clientY - bounding.top;
-            const pixel = ctx.getImageData(x, y, 1, 1);
+            const r = CIRCLE_SIZE / 2
+            const clampedX = Math.min(Math.max(x, r), canvas.clientWidth - r);
+            const clampedY = Math.min(Math.max(y, r), canvas.clientHeight - r);
+            
+            // Move the dot
+            positionRef.current = { x: clampedX, y: clampedY };
+            if (eyedropperRef.current) {
+                eyedropperRef.current.style.left = `${clampedX}px`;
+                eyedropperRef.current.style.top = `${clampedY}px`;
+            }
+            
+            // Get color's data
+            const scaleX = canvas.width / canvas.clientWidth
+            const scaleY = canvas.height / canvas.clientHeight
+            const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1);
             const data = pixel.data;
     
             const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
@@ -68,10 +82,51 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
             setColor(hex)
         }
     }
+
+    /**
+     * Listening the mouse move, up, down event to decide the state of `isDragging`
+     */
+    useEffect(() => {
+        const handleMouseDown = (e: MouseEvent) => {
+        isMouseDown.current = true;
+
+        // Check if mousedown happened inside the container
+        if (containerRef.current?.contains(e.target as Node)) {
+            setIsDragging(true);
+        }
+        };
+
+        const handleMouseUp = () => {
+        isMouseDown.current = false;
+        setIsDragging(false); // Always stop dragging on mouseup
+        };
+
+        const handleMouseMove = (e: MouseEvent) => {
+        const isInside =
+            containerRef.current?.contains(e.target as Node) ?? false;
+
+        if (isMouseDown.current && isInside) {
+            setIsDragging(true); // Re-entered while still holding mouse
+        } else if (!isMouseDown.current || !isInside) {
+            setIsDragging(false);
+        }
+        };
+
+        window.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener('mousemove', handleMouseMove);
+
+        return () => {
+        window.removeEventListener('mousedown', handleMouseDown);
+        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, []);
     
 
     return (
         <Box
+            ref={containerRef}
             className="cp-image-color-picker-container"
             position="relative"
         >
@@ -81,32 +136,19 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
                 style={{ width: '100%', height: '100%' }}
                 onMouseMove={handleMouseMoveOnCanvas}
             />
-            <img
-                className="cp-image-color-picker-image-hidden"
-                ref={imageRef}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    visibility: 'hidden', // ✅ Keeps layout but hides visually
-                    position: 'absolute', // ✅ Optional: ensure it doesn't shift layout
-                    top: 0,
-                    left: 0
-                }}
-                src={src}
-            />
             <div
+                ref={eyedropperRef}
                 className="cp-image-color-picker-eyedropper"
                 style={{
                     position: 'absolute',
-                    top: position.y,
-                    left: position.x,
                     backgroundColor: color,
                     width: 25,
                     height: 25,
                     border: '1px solid #fff',
                     boxShadow: '0 0 0 2px #000',
                     borderRadius: '50%',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    transform: 'translate(-50%, -50%)'
                 }}
                 role="button"
                 onMouseDown={() => setIsDragging(true)}
