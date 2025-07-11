@@ -1,3 +1,7 @@
+import { createTheme } from "@mui/material";
+
+const theme = createTheme();
+
 export const customTypography = {
     fontFamily: [
         'Work Sans',
@@ -8,6 +12,9 @@ export const customTypography = {
         fontSize: 64,
         fontWeight: 700,
         letterSpacing: '-2%',
+        [theme.breakpoints.down('sm')]: {
+            fontSize: 24,
+        },
     },
     h2: {
         fontSize: 40,

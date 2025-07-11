@@ -85,7 +85,7 @@ export const darkPalettes = {
     },
     background: {
         default: '#191B24', // Dark background
-        paper: '#F3F3F3',
+        paper: '#191B24',
     },
     text: {
         primary: '#9999CE', // Light text for readability
