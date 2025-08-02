@@ -112,6 +112,44 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
     }
 
     /**
+     * Handle touch move on mobile.
+     */
+    function handleTouchMoveOnCanvas(event: React.TouchEvent<HTMLElement>) {
+        if (isDragging) {
+            const canvas = canvasRef.current!;
+            const ctx = canvas.getContext("2d")!;
+            const bounding = canvas.getBoundingClientRect();
+
+            // Use the first touch point
+            const touch = event.touches[0];
+            const x = touch.clientX - bounding.left;
+            const y = touch.clientY - bounding.top;
+            const r = CIRCLE_SIZE / 2;
+
+            const clampedX = Math.min(Math.max(x, r), canvas.clientWidth - r);
+            const clampedY = Math.min(Math.max(y, r), canvas.clientHeight - r);
+
+            // Move the dot
+            positionRef.current = { x: clampedX, y: clampedY };
+            if (eyedropperRef.current) {
+                eyedropperRef.current.style.left = `${clampedX}px`;
+                eyedropperRef.current.style.top = `${clampedY}px`;
+            }
+
+            // Get color data
+            const scaleX = canvas.width / canvas.clientWidth;
+            const scaleY = canvas.height / canvas.clientHeight;
+            const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1);
+            const data = pixel.data;
+
+            const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
+            const hex = useColorTransform("rgba", "hex", rgba);
+
+            setColor(hex);
+        }
+    }
+
+    /**
      * Handle keys down events on the Canvas or dot
      */
     function handleKeyDownOnCanvasDot(event: React.KeyboardEvent<HTMLElement>) {
@@ -254,6 +292,7 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
                 className="cp-image-color-picker-image"
                 style={{ width: '100%', height: '100%' }}
                 onMouseMove={handleMouseMoveOnCanvas}
+                onTouchMove={handleTouchMoveOnCanvas}
                 onKeyDown={handleKeyDownOnCanvasDot}
                 tabIndex={0}
                 aria-label="Color picker canvas"
@@ -275,6 +314,9 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
                 role="button"
                 onMouseDown={() => setIsDragging(true)}
                 onMouseUp={() => setIsDragging(false)}
+                onTouchStart={() => setIsDragging(true)}
+                onTouchMove={handleTouchMoveOnCanvas}
+                onTouchEnd={() => setIsDragging(false)}
                 onKeyDown={handleKeyDownOnCanvasDot}
                 onFocus={() => setIsDragging(true)}
                 onBlur={() => setIsDragging(false)}
