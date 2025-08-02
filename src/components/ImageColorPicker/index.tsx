@@ -238,7 +238,6 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
         };
 
         const handleTouchStart = (e: TouchEvent) => {
-            e.preventDefault()
             isMouseDown.current = true;
 
             // Check if mousedown happened inside the container
@@ -248,14 +247,11 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
         };
 
         const handleTouchEnd = (e: TouchEvent) => {
-            e.preventDefault()
             isMouseDown.current = false;
             setIsDragging(false); // Always stop dragging on mouseup
         };
 
         const handleTouchMove = (e: TouchEvent) => {
-            e.preventDefault()
-
             const isInside =
                 containerRef.current?.contains(e.target as Node) ?? false;
 
@@ -271,9 +267,9 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
         window.addEventListener('mousemove', handleMouseMove);
 
         if(isMobile) {
-            window.addEventListener('touchstart', handleTouchStart, { passive: false })
-            window.addEventListener('touchend', handleTouchEnd, { passive: false })
-            window.addEventListener('touchmove', handleTouchMove, { passive: false })
+            window.addEventListener('touchstart', handleTouchStart)
+            window.addEventListener('touchend', handleTouchEnd)
+            window.addEventListener('touchmove', handleTouchMove)
         }
 
         return () => {
