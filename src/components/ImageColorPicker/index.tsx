@@ -32,7 +32,7 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
         if (!src || !canvasRef.current) return;
 
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
         if (!ctx) return;
 
         const img = new Image();
@@ -81,7 +81,7 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
         if(isDragging) {
             // Canvas
             const canvas = canvasRef.current!;
-            const ctx = canvas.getContext('2d')!;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
             const bounding = canvas.getBoundingClientRect();
 
             // Get the position
@@ -114,10 +114,12 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
     /**
      * Handle touch move on mobile.
      */
-    function handleTouchMoveOnCanvas(event: React.TouchEvent<HTMLElement>) {
+    function handleTouchMoveOnCanvas(event: TouchEvent) {
+        event.preventDefault()
+        // TODO: Fix the browser scrolling while dragging the eyedropper
         if (isDragging) {
             const canvas = canvasRef.current!;
-            const ctx = canvas.getContext("2d")!;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
             const bounding = canvas.getBoundingClientRect();
 
             // Use the first touch point
@@ -152,11 +154,11 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
     /**
      * Handle keys down events on the Canvas or dot
      */
-    function handleKeyDownOnCanvasDot(event: React.KeyboardEvent<HTMLElement>) {
+    function handleKeyDownOnCanvasDot(event: React.KeyboardEvent) {
         const MOVE_STEP = 5;
 
         const canvas = canvasRef.current!;
-        const ctx = canvas.getContext('2d')!;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
         const r = CIRCLE_SIZE / 2;
         const canvasWidth = canvas.clientWidth;
         const canvasHeight = canvas.clientHeight;
@@ -236,6 +238,7 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
         };
 
         const handleTouchStart = (e: TouchEvent) => {
+            e.preventDefault()
             isMouseDown.current = true;
 
             // Check if mousedown happened inside the container
@@ -244,12 +247,15 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
             }
         };
 
-        const handleTouchEnd = () => {
+        const handleTouchEnd = (e: TouchEvent) => {
+            e.preventDefault()
             isMouseDown.current = false;
             setIsDragging(false); // Always stop dragging on mouseup
         };
 
         const handleTouchMove = (e: TouchEvent) => {
+            e.preventDefault()
+
             const isInside =
                 containerRef.current?.contains(e.target as Node) ?? false;
 
@@ -265,9 +271,9 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
         window.addEventListener('mousemove', handleMouseMove);
 
         if(isMobile) {
-            window.addEventListener('touchstart', handleTouchStart)
-            window.addEventListener('touchend', handleTouchEnd)
-            window.addEventListener('touchmove', handleTouchMove)
+            window.addEventListener('touchstart', handleTouchStart, { passive: false })
+            window.addEventListener('touchend', handleTouchEnd, { passive: false })
+            window.addEventListener('touchmove', handleTouchMove, { passive: false })
         }
 
         return () => {
@@ -279,7 +285,27 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
             window.removeEventListener('touchmove', handleTouchMove);
         };
     }, []);
-    
+
+    /**
+     * Handle the touch move events on Canvas and Eyedropper
+     */
+    useEffect(() => {
+        // DOMs
+        const canvas = canvasRef.current;
+        const eyedropper = eyedropperRef.current;
+
+        if (!canvas || !eyedropper) return;
+
+        if(isMobile) {
+            canvas.addEventListener('touchmove', handleTouchMoveOnCanvas, { passive: false })
+            eyedropper.addEventListener('touchmove', handleTouchMoveOnCanvas, { passive: false })
+        }
+
+        return () => {
+            canvas.removeEventListener ('touchmove', handleTouchMoveOnCanvas)
+            eyedropper.removeEventListener ('touchmove', handleTouchMoveOnCanvas)
+        }
+    }, [canvasRef.current, eyedropperRef.current]);
 
     return (
         <Box
@@ -292,7 +318,7 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
                 className="cp-image-color-picker-image"
                 style={{ width: '100%', height: '100%' }}
                 onMouseMove={handleMouseMoveOnCanvas}
-                onTouchMove={handleTouchMoveOnCanvas}
+                // onTouchMove={handleTouchMoveOnCanvas}
                 onKeyDown={handleKeyDownOnCanvasDot}
                 tabIndex={0}
                 aria-label="Color picker canvas"
@@ -315,7 +341,7 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
                 onMouseDown={() => setIsDragging(true)}
                 onMouseUp={() => setIsDragging(false)}
                 onTouchStart={() => setIsDragging(true)}
-                onTouchMove={handleTouchMoveOnCanvas}
+                // onTouchMove={handleTouchMoveOnCanvas}
                 onTouchEnd={() => setIsDragging(false)}
                 onKeyDown={handleKeyDownOnCanvasDot}
                 onFocus={() => setIsDragging(true)}
