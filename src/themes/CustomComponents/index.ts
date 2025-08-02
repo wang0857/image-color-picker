@@ -8,6 +8,24 @@ export const customComponents = {
             },
         },
     },
+    MuiIconButton: {
+        styleOverrides: {
+            root: {
+                '&:focus': {
+                    outline: '2px solid var(--primary)',
+                    outlineOffset: -2,
+                },
+                '&:focus-within': {
+                    outline: '2px solid var(--primary)',
+                    outlineOffset: -2,
+                },
+                '&:focus-visible': {
+                    outline: '2px solid var(--primary)',
+                    outlineOffset: -2,
+                },
+            },
+        },
+    },
     MuiSvgIcon: {
         styleOverrides: {
             root: {
@@ -18,14 +36,12 @@ export const customComponents = {
 
         }, 
     },
-    // TODO: Input Field
     MuiInputBase: {
         styleOverrides: {
             root: {
                 borderRadius: 16,
-                border: '1px solid #FFFFFF'
+                border: '1px solid #FFFFFF',
             },
-
         }, 
     },
     MuiOutlinedInput: {
@@ -39,6 +55,18 @@ export const customComponents = {
         styleOverrides: {
             root: {
                 borderRadius: 16,
+                '&:focus': {
+                    outline: '2px solid var(--primary)',
+                    outlineOffset: 4,
+                },
+                '&:focus-within': {
+                    outline: '2px solid var(--primary)',
+                    outlineOffset: 4,
+                },
+                '&:focus-visible': {
+                    outline: '2px solid var(--primary)',
+                    outlineOffset: 4,
+                },
             },
             select: {
                 borderRadius: 16,
@@ -60,7 +88,16 @@ export const customComponents = {
             root: {
                 '&:hover': {
                     backgroundColor: 'rgba(140, 140, 161, 0.12)'
-                }
+                },
+                '&:focus': {
+                    backgroundColor: 'rgba(140, 140, 161, 0.12)'
+                },
+                '&:focus-within': {
+                    backgroundColor: 'rgba(140, 140, 161, 0.12)'
+                },
+                '&:focus-visible': {
+                    backgroundColor: 'rgba(140, 140, 161, 0.12)'
+                },
             },
         }, 
     },

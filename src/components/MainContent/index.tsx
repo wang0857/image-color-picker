@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { CopyColor, ImageUploader } from "../../components"
-import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack, useMediaQuery, useTheme } from "@mui/material";
+import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack } from "@mui/material";
 import { colorFormatsEnum } from "../../utils/enums";
+import { useDetectDevice } from "../../hooks/useDetectMobile";
 
 function MainContent() {
     // Color related
@@ -9,8 +10,7 @@ function MainContent() {
     // Color format related
     const [colorFormat, setColorFormat] = useState<string>(colorFormatsEnum.hex);
     // RWD related
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const { isMobile } = useDetectDevice()
 
 
     /**

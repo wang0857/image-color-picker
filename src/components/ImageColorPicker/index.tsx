@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { useColorTransform } from "../../hooks/useColorTransform";
+import { useDetectDevice } from "../../hooks/useDetectMobile";
 
 interface ImageColorPickerProps {
     src: string;
@@ -20,6 +21,8 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
     // Detect the mouse move related
     const isMouseDown = useRef(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    // RWD related
+    const { isMobile } = useDetectDevice()
     
 
     /**
@@ -43,6 +46,31 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
                 img,    // source
                 0, 0,   // draw starting at top-left corner of canvas
             );
+
+            // Set initial position in the center of image
+            const halfWidth = Math.floor(img.width / 2);
+            const halfHeight = Math.floor(img.height / 2);
+            const scaleX = canvas.width / canvas.clientWidth
+            const scaleY = canvas.height / canvas.clientHeight
+            const clampedX = Math.floor(halfWidth / scaleX)
+            const clampedY = Math.floor(halfHeight / scaleY)
+            
+            // Move the dot
+            positionRef.current = { x: clampedX, y: clampedY }
+            const { x, y } = positionRef.current
+            if (eyedropperRef.current) {
+                eyedropperRef.current.style.left = `${x}px`;
+                eyedropperRef.current.style.top = `${y}px`;
+            }
+            
+            // Get color's data
+            const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1);
+            const data = pixel.data;
+    
+            const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
+            const hex = useColorTransform('rgba', 'hex', rgba)
+    
+            setColor(hex)
         };
     }, [src]);
 
@@ -84,42 +112,133 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
     }
 
     /**
+     * Handle keys down events on the Canvas or dot
+     */
+    function handleKeyDownOnCanvasDot(event: React.KeyboardEvent<HTMLElement>) {
+        const MOVE_STEP = 5;
+
+        const canvas = canvasRef.current!;
+        const ctx = canvas.getContext('2d')!;
+        const r = CIRCLE_SIZE / 2;
+        const canvasWidth = canvas.clientWidth;
+        const canvasHeight = canvas.clientHeight;
+
+        let { x, y } = positionRef.current;
+
+        switch (event.key) {
+            case 'ArrowUp':
+                y = Math.max(y - MOVE_STEP, r);
+                break;
+            case 'ArrowDown':
+                y = Math.min(y + MOVE_STEP, canvasHeight - r);
+                break;
+            case 'ArrowLeft':
+                x = Math.max(x - MOVE_STEP, r);
+                break;
+            case 'ArrowRight':
+                x = Math.min(x + MOVE_STEP, canvasWidth - r);
+                break;
+            case 'Tab':
+                eyedropperRef.current?.focus()
+                break
+            case 'Escape':
+                eyedropperRef.current?.blur()
+                break
+            default:
+                return;
+        }
+
+        positionRef.current = { x, y };
+
+        if (eyedropperRef.current) {
+            eyedropperRef.current.style.left = `${x}px`;
+            eyedropperRef.current.style.top = `${y}px`;
+        }
+
+        const scaleX = canvas.width / canvas.clientWidth;
+        const scaleY = canvas.height / canvas.clientHeight;
+        const pixel = ctx.getImageData(x * scaleX, y * scaleY, 1, 1);
+        const data = pixel.data;
+
+        const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
+        const hex = useColorTransform('rgba', 'hex', rgba);
+
+        setColor(hex);
+    }
+
+    /**
      * Listening the mouse move, up, down event to decide the state of `isDragging`
      */
     useEffect(() => {
+        eyedropperRef.current?.focus()
+        
         const handleMouseDown = (e: MouseEvent) => {
-        isMouseDown.current = true;
+            isMouseDown.current = true;
 
-        // Check if mousedown happened inside the container
-        if (containerRef.current?.contains(e.target as Node)) {
-            setIsDragging(true);
-        }
+            // Check if mousedown happened inside the container
+            if (containerRef.current?.contains(e.target as Node)) {
+                setIsDragging(true);
+            }
         };
 
         const handleMouseUp = () => {
-        isMouseDown.current = false;
-        setIsDragging(false); // Always stop dragging on mouseup
+            isMouseDown.current = false;
+            setIsDragging(false); // Always stop dragging on mouseup
         };
 
         const handleMouseMove = (e: MouseEvent) => {
-        const isInside =
-            containerRef.current?.contains(e.target as Node) ?? false;
+            const isInside =
+                containerRef.current?.contains(e.target as Node) ?? false;
 
-        if (isMouseDown.current && isInside) {
-            setIsDragging(true); // Re-entered while still holding mouse
-        } else if (!isMouseDown.current || !isInside) {
-            setIsDragging(false);
-        }
+            if (isMouseDown.current && isInside) {
+                setIsDragging(true); // Re-entered while still holding mouse
+            } else if (!isMouseDown.current || !isInside) {
+                setIsDragging(false);
+            }
+        };
+
+        const handleTouchStart = (e: TouchEvent) => {
+            isMouseDown.current = true;
+
+            // Check if mousedown happened inside the container
+            if (containerRef.current?.contains(e.target as Node)) {
+                setIsDragging(true);
+            }
+        };
+
+        const handleTouchEnd = () => {
+            isMouseDown.current = false;
+            setIsDragging(false); // Always stop dragging on mouseup
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            const isInside =
+                containerRef.current?.contains(e.target as Node) ?? false;
+
+            if (isMouseDown.current && isInside) {
+                setIsDragging(true); // Re-entered while still holding mouse
+            } else if (!isMouseDown.current || !isInside) {
+                setIsDragging(false);
+            }
         };
 
         window.addEventListener('mousedown', handleMouseDown);
         window.addEventListener('mouseup', handleMouseUp);
         window.addEventListener('mousemove', handleMouseMove);
 
+        if(isMobile) {
+            window.addEventListener('touchstart', handleTouchStart)
+            window.addEventListener('touchend', handleTouchEnd)
+            window.addEventListener('touchmove', handleTouchMove)
+        }
+
         return () => {
-        window.removeEventListener('mousedown', handleMouseDown);
-        window.removeEventListener('mouseup', handleMouseUp);
-        window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mousedown', handleMouseDown);
+            window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchend', handleTouchEnd);
+            window.removeEventListener('touchmove', handleTouchMove);
         };
     }, []);
     
@@ -135,6 +254,9 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
                 className="cp-image-color-picker-image"
                 style={{ width: '100%', height: '100%' }}
                 onMouseMove={handleMouseMoveOnCanvas}
+                onKeyDown={handleKeyDownOnCanvasDot}
+                tabIndex={0}
+                aria-label="Color picker canvas"
             />
             <div
                 ref={eyedropperRef}
@@ -153,6 +275,11 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
                 role="button"
                 onMouseDown={() => setIsDragging(true)}
                 onMouseUp={() => setIsDragging(false)}
+                onKeyDown={handleKeyDownOnCanvasDot}
+                onFocus={() => setIsDragging(true)}
+                onBlur={() => setIsDragging(false)}
+                tabIndex={0}
+                aria-label="Color picker eyedropper"
             />
         </Box>
     );

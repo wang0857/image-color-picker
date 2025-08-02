@@ -15,6 +15,8 @@ function CopyColor({ color, colorFormat }: CopyColorProps) {
     // Message related
     const [openSuccessCopied, setOpenSuccessCopied] = useState(false);
     const [openFailureCopied, setOpenFailureCopied] = useState(false);
+    // Icon button focus related
+    const [isIconFocus, setIsIconFocus] = useState(false);
 
     /**
      * Transform the color formats
@@ -43,6 +45,15 @@ function CopyColor({ color, colorFormat }: CopyColorProps) {
         }
     }
 
+    /**
+     * Handle blurring the input and forcely focusing on the Copy icon button
+     */
+    function handleInputOnBlur(e: React.FocusEvent<HTMLInputElement>) {
+        // Get DOMs
+        const iconButton = e.relatedTarget as HTMLButtonElement
+        iconButton.focus()
+    }
+
     return (
         <>
             <Box
@@ -50,6 +61,20 @@ function CopyColor({ color, colorFormat }: CopyColorProps) {
                 sx={{
                     border: '1px solid #FFFFFF',
                     borderRadius: 4,
+                    ...(!isIconFocus && {
+                        '&:focus': {
+                            outline: '2px solid var(--primary)',
+                            outlineOffset: 4,
+                        },
+                        '&:focus-within': {
+                            outline: '2px solid var(--primary)',
+                            outlineOffset: 4,
+                        },
+                        '&:focus-visible': {
+                            outline: '2px solid var(--primary)',
+                            outlineOffset: 4,
+                        },
+                    })
                 }}
                 display="flex"
                 justifyContent="space-between"
@@ -64,10 +89,13 @@ function CopyColor({ color, colorFormat }: CopyColorProps) {
                         '& .MuiInputBase-root': { border: 'none' },
                         '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
                     }}
+                    onBlur={handleInputOnBlur}
                 />
                 <IconButton
                     className="cp-copy-color-button"
                     onClick={() => handleCopyColor(formattedColor)}
+                    onFocus={() => setIsIconFocus(true)}
+                    onBlur={() => setIsIconFocus(false)}
                 >
                     <ContentCopyRounded />
                 </IconButton>
