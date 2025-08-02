@@ -246,7 +246,7 @@ function ImageColorPicker({ src, color, setColor }: ImageColorPickerProps) {
             }
         };
 
-        const handleTouchEnd = (e: TouchEvent) => {
+        const handleTouchEnd = () => {
             isMouseDown.current = false;
             setIsDragging(false); // Always stop dragging on mouseup
         };
