@@ -30,8 +30,7 @@ One of them is [Pixel manipulation](https://developer.mozilla.org/en-US/docs/Web
 - [v] Develop the function of converting RGB to Hex codes.
 - [v] Develop the function of copying the value from the color input field.
 - [v] Implement dot movement functionality on desktop (mouse and keyboard) and mobile (touch).
-- [] Develop the unit test for the functions of converting colors and copying values.
-- [] Develop the E2E test for the UI.
+- [v] Develop the unit test for the functions of converting colors and copying values.
 
 ## Prototypes in Figma
 

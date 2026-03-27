@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { ContentCopyRounded } from "@mui/icons-material";
 import { Alert, Box, IconButton, Snackbar, TextField } from "@mui/material";
 import { colorFormatsEnum } from "../../utils/enums";
-import { hexToRgb } from "../../utils/helpers/colorTransfrom";
+import { hexToRgb } from "../../utils/helpers/colorTransform";
+import { copyToClipboard } from "../../utils/helpers/copyColor";
 
 interface CopyColorProps {
     color: string;
@@ -35,13 +36,11 @@ function CopyColor({ color, colorFormat }: CopyColorProps) {
      * Handle copying current color
      */
     async function handleCopyColor(color: string) {
-        try {
-            await navigator.clipboard.writeText(color);
-            console.log(`Copied to clipboard: ${color}`);
-            setOpenSuccessCopied(true)
-        } catch (err) {
-            console.error('Clipboard write failed:', err);
-            setOpenFailureCopied(true)
+    const success = await copyToClipboard(color);
+        if (success) {
+            setOpenSuccessCopied(true);
+        } else {
+            setOpenFailureCopied(true);
         }
     }
 
